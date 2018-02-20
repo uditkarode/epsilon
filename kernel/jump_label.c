@@ -420,6 +420,19 @@ void __init jump_label_init(void)
 	cpus_read_unlock();
 }
 
+/* Disable any jump label entries in __init code */
+void __init jump_label_invalidate_init(void)
+{
+	struct jump_entry *iter_start = __start___jump_table;
+	struct jump_entry *iter_stop = __stop___jump_table;
+	struct jump_entry *iter;
+
+	for (iter = iter_start; iter < iter_stop; iter++) {
+		if (init_kernel_text(iter->code))
+			iter->code = 0;
+	}
+}
+
 #ifdef CONFIG_MODULES
 
 static enum jump_label_type jump_label_init_type(struct jump_entry *entry)
