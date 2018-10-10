@@ -139,3 +139,9 @@
  * If disabled, boosts will only bias tasks to higher-capacity CPUs.
  */
 #define SCHED_FEAT_SCHEDTUNE_BOOST_UTIL 1
+
+/*
+ * Use the Simplified Energy Model for EAS accounting only for
+ * active costs of CPUs.
+ */
+#define SCHED_FEAT_EAS_SIMPLIFIED_EM 0
