@@ -5113,7 +5113,6 @@ static irqreturn_t handle_wake_irq(int irq, void *data)
 	} else {
 		PCIE_DBG2(dev, "Wake up RC%d\n", dev->rc_idx);
 		__pm_stay_awake(&dev->ws);
-		__pm_relax(&dev->ws);
 
 		if (dev->num_ep > 1) {
 			for (i = 0; i < MAX_DEVICE_NUM; i++) {
@@ -5125,6 +5124,7 @@ static irqreturn_t handle_wake_irq(int irq, void *data)
 		} else {
 			msm_pcie_notify_client(dev, MSM_PCIE_EVENT_WAKEUP);
 		}
+		__pm_relax(&dev->ws);
 	}
 
 	spin_unlock_irqrestore(&dev->wakeup_lock, irqsave_flags);
