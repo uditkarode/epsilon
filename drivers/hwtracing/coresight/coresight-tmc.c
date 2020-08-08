@@ -75,6 +75,7 @@ static void __tmc_reg_dump(struct tmc_drvdata *drvdata)
 	struct msm_dump_data *dump_data;
 	uint32_t *reg_buf;
 
+#if 0
 	if (drvdata->config_type == TMC_CONFIG_TYPE_ETR) {
 		dump_entry = get_msm_dump_ptr(MSM_DUMP_DATA_TMC_ETR_REG);
 		dev_dbg(drvdata->dev, "%s: TMC ETR dump entry ptr is %pK\n",
@@ -86,6 +87,7 @@ static void __tmc_reg_dump(struct tmc_drvdata *drvdata)
 			__func__, dump_entry);
 	} else
 		return;
+#endif
 
 	if (dump_entry == NULL)
 		return;

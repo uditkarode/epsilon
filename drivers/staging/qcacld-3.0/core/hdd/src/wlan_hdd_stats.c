@@ -5601,8 +5601,9 @@ QDF_STATUS wlan_hdd_get_mib_stats(struct hdd_adapter *adapter)
 		wlan_cfg80211_mc_cp_stats_free_stats_event(stats);
 		return ret;
 	}
-
+#if 0
 	hdd_debugfs_process_mib_stats(adapter, stats);
+#endif
 
 	wlan_cfg80211_mc_cp_stats_free_stats_event(stats);
 	return ret;

@@ -10770,7 +10770,7 @@ dp_txrx_post_data_stall_event(struct cdp_soc_t *soc_hdl,
 }
 #endif /* WLAN_SUPPORT_DATA_STALL */
 
-#ifdef DP_PEER_EXTENDED_API
+#if 0
 /**
  * dp_peer_get_ref_find_by_addr - get peer with addr by ref count inc
  * @dev: physical device instance

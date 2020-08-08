@@ -3800,7 +3800,6 @@ int hdd_wlan_start_modules(struct hdd_context *hdd_ctx, bool reinit)
 		 */
 		hdd_spectral_register_to_dbr(hdd_ctx);
 
-		hdd_sysfs_create_driver_root_obj();
 		hdd_sysfs_create_version_interface(hdd_ctx->psoc);
 		hdd_sysfs_create_powerstats_interface();
 		hdd_sysfs_dp_aggregation_create();
@@ -3849,7 +3848,6 @@ destroy_driver_sysfs:
 	hdd_sysfs_dp_aggregation_destroy();
 	hdd_sysfs_destroy_powerstats_interface();
 	hdd_sysfs_destroy_version_interface();
-	hdd_sysfs_destroy_driver_root_obj();
 	cds_post_disable();
 
 unregister_notifiers:
@@ -13593,7 +13591,6 @@ int hdd_wlan_stop_modules(struct hdd_context *hdd_ctx, bool ftm_mode)
 	hdd_sysfs_dp_aggregation_destroy();
 	hdd_sysfs_destroy_powerstats_interface();
 	hdd_sysfs_destroy_version_interface();
-	hdd_sysfs_destroy_driver_root_obj();
 	hdd_debug("Closing CDS modules!");
 
 	if (hdd_get_conparam() != QDF_GLOBAL_EPPING_MODE) {
