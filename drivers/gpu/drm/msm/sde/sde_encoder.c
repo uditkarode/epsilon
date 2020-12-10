@@ -230,6 +230,8 @@ enum sde_enc_rc_states {
  * @recovery_events_enabled:	status of hw recovery feature enable by client
  * @elevated_ahb_vote:		increase AHB bus speed for the first frame
  *				after power collapse
+ * @mode_info:                  stores the current mode and should be used
+ *				 only in commit phase
  */
 struct sde_encoder_virt {
 	struct drm_encoder base;
@@ -292,6 +294,7 @@ struct sde_encoder_virt {
 
 	bool recovery_events_enabled;
 	bool elevated_ahb_vote;
+	struct msm_mode_info mode_info;
 };
 
 #define to_sde_encoder_virt(x) container_of(x, struct sde_encoder_virt, base)
