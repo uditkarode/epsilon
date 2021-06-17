@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2015-2020 The Linux Foundation. All rights reserved.
+ * Copyright (c) 2015-2021 The Linux Foundation. All rights reserved.
  * Copyright (C) 2021 XiaoMi, Inc.
  * Copyright (C) 2013 Red Hat
  * Author: Rob Clark <robdclark@gmail.com>
@@ -874,4 +874,9 @@ int sde_crtc_get_num_datapath(struct drm_crtc *crtc,
 
 uint32_t sde_crtc_get_mi_fod_sync_info(struct sde_crtc_state *cstate);
 
+/**
+ * _sde_crtc_clear_dim_layers_v1 - clear all dim layer settings
+ * @cstate:      Pointer to drm crtc state
+ */
+void _sde_crtc_clear_dim_layers_v1(struct drm_crtc_state *state);
 #endif /* _SDE_CRTC_H_ */
