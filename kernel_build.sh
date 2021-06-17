@@ -74,7 +74,7 @@ build_end() {
     [ ! -f "avbtool.py" ] && curl https://android.googlesource.com/platform/external/avb/+/refs/heads/master/avbtool.py?format=TEXT | base64 --decode > avbtool.py
     python3 avbtool.py add_hash_footer --image dtbo.img --partition_size=33554432 --partition_name dtbo
     ZIP_NAME="delta-mod-$(date +"%H:%M:%S").zip"
-    zip -r9 "$ZIP_NAME".zip ./* -x .git README.md ./*placeholder avbtool.py
+    zip -r9 "$ZIP_NAME".zip 'anykernel.sh' 'dtbo.img' 'zImage' 'META-INF' 'tools'
 
     echo "$ZIP_NAME" "Time taken: $((DIFF / 60))m $((DIFF % 60))s"
 }
