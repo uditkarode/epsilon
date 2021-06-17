@@ -65,23 +65,18 @@ build_end() {
     fi
 
     echo -e "\n> Build successful! generating flashable zip..."
-	cd "$AK_DIR" || echo -e "\nAnykernel directory ($AK_DIR) does not exist" || exit 1
-	git clean -fd
-	mv "$KERNEL_IMG" "$AK_DIR"/zImage
-	mv "$KERNEL_DTBO" "$AK_DIR"
-	curl https://android.googlesource.com/platform/external/avb/+/refs/heads/master/avbtool.py?format=TEXT | base64 --decode > avbtool.py
-	python3 avbtool.py add_hash_footer --image dtbo.img --partition_size=33554432 --partition_name dtbo
-	ZIP_NAME=$KERNELNAME-$1-$COMMIT_SHA-$(date +%Y-%m-%d_%H%M)-UTC
-	zip -r9 "$ZIP_NAME".zip ./* -x .git README.md ./*placeholder avbtool.py
+    cd "$AK_DIR" || echo -e "\nAnykernel directory ($AK_DIR) does not exist" || exit 1
+    rm -fv zImage
+    rm -fv dtbo.img
+    rm -fv zipsigner-4.0.jar
+    mv "$KERNEL_IMG" "$AK_DIR"/zImage
+    mv "$KERNEL_DTBO" "$AK_DIR"
+    [ ! -f "avbtool.py" ] && curl https://android.googlesource.com/platform/external/avb/+/refs/heads/master/avbtool.py?format=TEXT | base64 --decode > avbtool.py
+    python3 avbtool.py add_hash_footer --image dtbo.img --partition_size=33554432 --partition_name dtbo
+    ZIP_NAME="delta-mod-$(date +"%H:%M:%S").zip"
+    zip -r9 "$ZIP_NAME".zip ./* -x .git README.md ./*placeholder avbtool.py
 
-	# Sign zip if java is available
-	if command -v java > /dev/null 2>&1; then
-		curl -sLo zipsigner-4.0.jar https://github.com/baalajimaestro/AnyKernel3/raw/master/zipsigner-4.0.jar
-		java -jar zipsigner-4.0.jar "$ZIP_NAME".zip "$ZIP_NAME"-signed.zip
-		ZIP_NAME="$ZIP_NAME-signed.zip"
-	fi
-
-	echo "$ZIP_NAME" "Time taken: <code>$((DIFF / 60))m $((DIFF % 60))s</code>"
+    echo "$ZIP_NAME" "Time taken: $((DIFF / 60))m $((DIFF % 60))s"
 }
 
 # End function definitions
