@@ -9,10 +9,8 @@
 # Config
 KERNELNAME="Delta-mod"
 KERNEL_DIR="$PWD"
-AK_REPO="https://github.com/TheStaticDesign/AnyKernel3"
-AK_BRANCH="sweet"
 
-export AK_DIR="$PWD/../sweet_assets/AnyKernel3"
+export AK_DIR="$PWD/flasher"
 export TC_DIR="$PWD/../sweet_assets/proton-clang"
 # End Config
 
@@ -24,13 +22,7 @@ clone_tc() {
 	git clone --depth=1 https://github.com/kdrag0n/proton-clang.git $TC_DIR
 }
 
-# Clones anykernel
-clone_ak() {
-	git clone $AK_REPO $AK_DIR -b $AK_BRANCH
-}
-
 # Actually do stuff
 [ ! -d "$TC_DIR" ] && clone_tc
-[ ! -d "$AK_DIR" ] && clone_ak
 
 ./kernel_build.sh
