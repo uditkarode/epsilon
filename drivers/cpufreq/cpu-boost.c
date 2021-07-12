@@ -72,7 +72,7 @@ module_param(sched_boost_on_powerkey_input, bool, 0644);
 static bool sched_boost_active;
 
 #ifdef CONFIG_DYNAMIC_STUNE_BOOST
-static int dynamic_stune_boost = 2;
+static int dynamic_stune_boost = 1;
 static bool stune_boost_active;
 static int boost_slot;
 static unsigned int dynamic_stune_boost_ms = 40;
