@@ -1566,7 +1566,7 @@ static void lpm_cpuidle_s2idle(struct cpuidle_device *dev,
 
 	if (s2idle_aborted) {
 		pr_err("Aborting s2idle suspend: too many iterations\n");
-		log_bad_wake_reason("s2idle soft watchdog");
+		pr_err("log_bad_wake_reason substitute -- s2idle soft watchdog");
 		pm_system_wakeup();
 		goto exit;
 	}
