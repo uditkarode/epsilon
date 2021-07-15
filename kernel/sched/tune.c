@@ -700,7 +700,7 @@ boost_write(struct cgroup_subsys_state *css, struct cftype *cft,
 {
 	struct schedtune *st = css_st(css);
 
-	if (boost < 0 || boost > 100)
+	if (boost < -100 || boost > 100)
 		return -EINVAL;
 
 	st->boost = boost;
@@ -881,10 +881,10 @@ static void write_default_values(struct cgroup_subsys_state *css)
 {
 	static struct st_data st_targets[] = {
 		{ "audio-app",	0, 0, 0, 0 },
-		{ "background",	0, 0, 0, 0 },
+		{ "background",	-25, 0, 0, 0 },
 		{ "foreground",	1, 1, 0, 0 },
 		{ "rt",		0, 0, 0, 0 },
-		{ "top-app",	5, 1, 0, 0 },
+		{ "top-app",	1, 1, 0, 0 },
 	};
 	int i;
 

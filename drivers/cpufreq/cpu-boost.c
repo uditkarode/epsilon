@@ -16,6 +16,7 @@
 #define pr_fmt(fmt) "cpu-boost: " fmt
 
 #include <linux/kernel.h>
+#include <linux/msm_drm_notify.h>
 #include <linux/init.h>
 #include <linux/cpufreq.h>
 #include <linux/cpu.h>
@@ -49,6 +50,9 @@ static struct kthread_work powerkey_input_boost_work;
 
 static bool input_boost_enabled;
 
+static struct notifier_block msm_drm_notif;
+static bool screen_off = 0;
+
 static unsigned int input_boost_ms = 40;
 module_param(input_boost_ms, uint, 0644);
 
@@ -64,8 +68,7 @@ module_param(sched_boost_on_powerkey_input, bool, 0644);
 static bool sched_boost_active;
 
 #ifdef CONFIG_DYNAMIC_STUNE_BOOST
-static int dynamic_stune_boost;
-module_param(dynamic_stune_boost, uint, 0644);
+static int dynamic_stune_boost = 5;
 static bool stune_boost_active;
 static int boost_slot;
 static unsigned int dynamic_stune_boost_ms = 40;
@@ -314,12 +317,14 @@ static void do_input_boost(struct kthread_work *work)
 	}
 
 #ifdef CONFIG_DYNAMIC_STUNE_BOOST
-	/* Set dynamic stune boost value */
-	ret = do_stune_boost("top-app", dynamic_stune_boost, &boost_slot);
-	if (!ret)
-		stune_boost_active = true;
+        if(!screen_off) {
+          /* Set dynamic stune boost value */
+          ret = do_stune_boost("top-app", dynamic_stune_boost, &boost_slot);
+          if (!ret)
+                  stune_boost_active = true;
 
-	schedule_delayed_work(&dynamic_stune_boost_rem, msecs_to_jiffies(dynamic_stune_boost_ms));
+          schedule_delayed_work(&dynamic_stune_boost_rem, msecs_to_jiffies(dynamic_stune_boost_ms));
+        }
 #endif /* CONFIG_DYNAMIC_STUNE_BOOST */
 
 	schedule_delayed_work(&input_boost_rem, msecs_to_jiffies(input_boost_ms));
@@ -356,12 +361,14 @@ static void do_powerkey_input_boost(struct kthread_work *work)
 	}
 
 #ifdef CONFIG_DYNAMIC_STUNE_BOOST
-	/* Set dynamic stune boost value */
-	ret = do_stune_boost("top-app", dynamic_stune_boost, &boost_slot);
-	if (!ret)
-		stune_boost_active = true;
+        if(!screen_off) {
+          /* Set dynamic stune boost value */
+          ret = do_stune_boost("top-app", dynamic_stune_boost, &boost_slot);
+          if (!ret)
+                  stune_boost_active = true;
 
-	schedule_delayed_work(&dynamic_stune_boost_rem, msecs_to_jiffies(powerkey_input_boost_ms));
+          schedule_delayed_work(&dynamic_stune_boost_rem, msecs_to_jiffies(powerkey_input_boost_ms));
+        }
 #endif /* CONFIG_DYNAMIC_STUNE_BOOST */
 
 	schedule_delayed_work(&input_boost_rem,
@@ -468,6 +475,33 @@ static struct input_handler cpuboost_input_handler = {
 	.id_table       = cpuboost_ids,
 };
 
+static int msm_drm_notifier_cb(struct notifier_block *nb, unsigned long action,
+                          void *data)
+{
+        struct msm_drm_notifier *evdata = data;
+        int *blank = evdata->data;
+
+        /* Parse framebuffer blank events as soon as they occur */
+        if (action != MSM_DRM_EARLY_EVENT_BLANK)
+                return NOTIFY_OK;
+
+        if (*blank == MSM_DRM_BLANK_UNBLANK) {
+                // screen woke up
+                screen_off = 0;
+		reset_stune_boost("top-app", boost_slot);
+		reset_stune_boost("foreground", boost_slot);
+		reset_stune_boost("background", boost_slot);
+        } else {
+                // screen went to sleep
+                screen_off = 1;
+                do_stune_boost("top-app", -30, &boost_slot);
+                do_stune_boost("foreground", -30, &boost_slot);
+                do_stune_boost("background", -30, &boost_slot);
+        }
+
+        return NOTIFY_OK;
+}
+
 static int cpu_boost_init(void)
 {
 	int cpu, ret, i;
@@ -527,6 +561,10 @@ static int cpu_boost_init(void)
 	cpufreq_register_notifier(&boost_adjust_nb, CPUFREQ_POLICY_NOTIFIER);
 
 	ret = input_register_handler(&cpuboost_input_handler);
+	msm_drm_notif.notifier_call = msm_drm_notifier_cb;
+	msm_drm_notif.priority = INT_MAX;
+	ret = msm_drm_register_client(&msm_drm_notif);
+	if (ret) pr_err("Failed to register msm_drm notifier, err: %d\n", ret);
 	return 0;
 }
 late_initcall(cpu_boost_init);
