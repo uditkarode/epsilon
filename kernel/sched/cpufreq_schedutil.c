@@ -655,6 +655,7 @@ static ssize_t down_rate_limit_us_show(struct gov_attr_set *attr_set, char *buf)
 static ssize_t up_rate_limit_us_store(struct gov_attr_set *attr_set,
 				      const char *buf, size_t count)
 {
+	return count;
 	struct sugov_tunables *tunables = to_sugov_tunables(attr_set);
 	struct sugov_policy *sg_policy;
 	unsigned int rate_limit_us;
@@ -675,6 +676,7 @@ static ssize_t up_rate_limit_us_store(struct gov_attr_set *attr_set,
 static ssize_t down_rate_limit_us_store(struct gov_attr_set *attr_set,
 					const char *buf, size_t count)
 {
+	return count;
 	struct sugov_tunables *tunables = to_sugov_tunables(attr_set);
 	struct sugov_policy *sg_policy;
 	unsigned int rate_limit_us;
@@ -702,6 +704,7 @@ static ssize_t hispeed_load_show(struct gov_attr_set *attr_set, char *buf)
 static ssize_t hispeed_load_store(struct gov_attr_set *attr_set,
 				  const char *buf, size_t count)
 {
+	return count;
 	struct sugov_tunables *tunables = to_sugov_tunables(attr_set);
 
 	if (kstrtouint(buf, 10, &tunables->hispeed_load))
@@ -722,6 +725,7 @@ static ssize_t hispeed_freq_show(struct gov_attr_set *attr_set, char *buf)
 static ssize_t hispeed_freq_store(struct gov_attr_set *attr_set,
 					const char *buf, size_t count)
 {
+	return count;
 	struct sugov_tunables *tunables = to_sugov_tunables(attr_set);
 	unsigned int val;
 	struct sugov_policy *sg_policy;
@@ -962,12 +966,10 @@ static int sugov_init(struct cpufreq_policy *policy)
 		goto stop_kthread;
 	}
 
-	tunables->up_rate_limit_us =
-				cpufreq_policy_transition_delay_us(policy);
-	tunables->down_rate_limit_us =
-				cpufreq_policy_transition_delay_us(policy);
+	tunables->up_rate_limit_us = 4000;
+	tunables->down_rate_limit_us = 16000;
 	tunables->hispeed_load = DEFAULT_HISPEED_LOAD;
-	tunables->hispeed_freq = 0;
+	tunables->hispeed_freq = INT_MAX;
 
 	policy->governor_data = sg_policy;
 	sg_policy->tunables = tunables;
