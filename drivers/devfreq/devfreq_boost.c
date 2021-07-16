@@ -317,25 +317,16 @@ static int __init devfreq_boost_init(void)
 		}
 	}
 
-	devfreq_boost_input_handler.private = d;
-	ret = input_register_handler(&devfreq_boost_input_handler);
-	if (ret) {
-		pr_err("Failed to register input handler, err: %d\n", ret);
-		goto stop_kthreads;
-	}
-
 	d->msm_drm_notif.notifier_call = msm_drm_notifier_cb;
 	d->msm_drm_notif.priority = INT_MAX;
 	ret = msm_drm_register_client(&d->msm_drm_notif);
 	if (ret) {
 		pr_err("Failed to register msm_drm notifier, err: %d\n", ret);
-		goto unregister_handler;
+		goto stop_kthreads;
 	}
 
 	return 0;
 
-unregister_handler:
-	input_unregister_handler(&devfreq_boost_input_handler);
 stop_kthreads:
 	while (i--)
 		kthread_stop(thread[i]);
