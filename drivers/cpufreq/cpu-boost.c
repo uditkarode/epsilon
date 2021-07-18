@@ -16,7 +16,9 @@
 #define pr_fmt(fmt) "cpu-boost: " fmt
 
 #include <linux/kernel.h>
+#ifdef CONFIG_DYNAMIC_STUNE_BOOST
 #include <linux/msm_drm_notify.h>
+#endif
 #include <linux/init.h>
 #include <linux/cpufreq.h>
 #include <linux/cpu.h>
@@ -50,7 +52,9 @@ static struct kthread_work powerkey_input_boost_work;
 
 static bool input_boost_enabled;
 
+#ifdef CONFIG_DYNAMIC_STUNE_BOOST
 static struct notifier_block msm_drm_notif;
+#endif
 static bool screen_off = 0;
 
 static unsigned int input_boost_ms = 40;
@@ -475,6 +479,7 @@ static struct input_handler cpuboost_input_handler = {
 	.id_table       = cpuboost_ids,
 };
 
+#ifdef CONFIG_DYNAMIC_STUNE_BOOST
 static int msm_drm_notifier_cb(struct notifier_block *nb, unsigned long action,
                           void *data)
 {
@@ -501,6 +506,7 @@ static int msm_drm_notifier_cb(struct notifier_block *nb, unsigned long action,
 
         return NOTIFY_OK;
 }
+#endif
 
 static int cpu_boost_init(void)
 {
@@ -561,10 +567,12 @@ static int cpu_boost_init(void)
 	cpufreq_register_notifier(&boost_adjust_nb, CPUFREQ_POLICY_NOTIFIER);
 
 	ret = input_register_handler(&cpuboost_input_handler);
+        #ifdef CONFIG_DYNAMIC_STUNE_BOOST
 	msm_drm_notif.notifier_call = msm_drm_notifier_cb;
 	msm_drm_notif.priority = INT_MAX;
 	ret = msm_drm_register_client(&msm_drm_notif);
 	if (ret) pr_err("Failed to register msm_drm notifier, err: %d\n", ret);
+        #endif
 	return 0;
 }
 late_initcall(cpu_boost_init);
