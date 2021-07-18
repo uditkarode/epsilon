@@ -72,7 +72,7 @@ module_param(sched_boost_on_powerkey_input, bool, 0644);
 static bool sched_boost_active;
 
 #ifdef CONFIG_DYNAMIC_STUNE_BOOST
-static int dynamic_stune_boost = 5;
+static int dynamic_stune_boost = 2;
 static bool stune_boost_active;
 static int boost_slot;
 static unsigned int dynamic_stune_boost_ms = 40;
@@ -499,9 +499,9 @@ static int msm_drm_notifier_cb(struct notifier_block *nb, unsigned long action,
         } else {
                 // screen went to sleep
                 screen_off = 1;
-                do_stune_boost("top-app", -30, &boost_slot);
-                do_stune_boost("foreground", -30, &boost_slot);
-                do_stune_boost("background", -30, &boost_slot);
+                do_stune_boost("top-app", 0, &boost_slot);
+                do_stune_boost("foreground", 0, &boost_slot);
+                do_stune_boost("background", 0, &boost_slot);
         }
 
         return NOTIFY_OK;
