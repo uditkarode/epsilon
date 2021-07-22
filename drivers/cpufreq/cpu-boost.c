@@ -73,7 +73,9 @@ static bool stune_boost_active;
 static int boost_slot;
 static unsigned int dynamic_stune_boost_ms = 40;
 module_param(dynamic_stune_boost_ms, uint, 0644);
+#if 0
 static struct delayed_work dynamic_stune_boost_rem;
+#endif
 #endif /* CONFIG_DYNAMIC_STUNE_BOOST */
 
 static struct delayed_work input_boost_rem;
@@ -281,7 +283,7 @@ static void do_input_boost(struct kthread_work *work)
 	unsigned int i, ret;
 	struct cpu_sync *i_sync_info;
 
-#ifdef CONFIG_DYNAMIC_STUNE_BOOST
+#if 0
 	cancel_delayed_work_sync(&dynamic_stune_boost_rem);
 #endif /* CONFIG_DYNAMIC_STUNE_BOOST */
 	cancel_delayed_work_sync(&input_boost_rem);
@@ -290,7 +292,7 @@ static void do_input_boost(struct kthread_work *work)
 		sched_boost_active = false;
 	}
 
-#ifdef CONFIG_DYNAMIC_STUNE_BOOST
+#if 0
 	if (stune_boost_active) {
 		reset_stune_boost("top-app", boost_slot);
 		stune_boost_active = false;
@@ -316,7 +318,7 @@ static void do_input_boost(struct kthread_work *work)
 			sched_boost_active = true;
 	}
 
-#ifdef CONFIG_DYNAMIC_STUNE_BOOST
+#if 0
         if(!screen_off) {
           /* Set dynamic stune boost value */
           ret = do_stune_boost("top-app", dynamic_stune_boost, &boost_slot);
@@ -360,7 +362,7 @@ static void do_powerkey_input_boost(struct kthread_work *work)
 			sched_boost_active = true;
 	}
 
-#ifdef CONFIG_DYNAMIC_STUNE_BOOST
+#if 0
         if(!screen_off) {
           /* Set dynamic stune boost value */
           ret = do_stune_boost("top-app", dynamic_stune_boost, &boost_slot);
@@ -431,7 +433,7 @@ err2:
 
 static void cpuboost_input_disconnect(struct input_handle *handle)
 {
-#ifdef CONFIG_DYNAMIC_STUNE_BOOST
+#if 0
 	/* Reset dynamic stune boost value to the default value */
 	reset_stune_boost("top-app", boost_slot);
 #endif /* CONFIG_DYNAMIC_STUNE_BOOST */
@@ -550,7 +552,7 @@ static int cpu_boost_init(void)
 	kthread_init_work(&input_boost_work, do_input_boost);
 	kthread_init_work(&powerkey_input_boost_work, do_powerkey_input_boost);
 	INIT_DELAYED_WORK(&input_boost_rem, do_input_boost_rem);
-#ifdef CONFIG_DYNAMIC_STUNE_BOOST
+#if 0
 	INIT_DELAYED_WORK(&dynamic_stune_boost_rem, do_dynamic_stune_boost_rem);
 #endif /* CONFIG_DYNAMIC_STUNE_BOOST */
 
