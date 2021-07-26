@@ -30,6 +30,7 @@
 #include <linux/miscdevice.h>
 #include <linux/msm_dma_iommu_mapping.h>
 #include <linux/bitops.h>
+#include <linux/msm_dma_iommu_mapping.h>
 #include "ion_kernel.h"
 #include "../uapi/ion.h"
 #include "../uapi/msm_ion.h"
@@ -124,7 +125,6 @@ struct ion_vma_list {
 struct ion_dma_buf_attachment;
 struct ion_buffer {
 	struct ion_heap *heap;
-	struct sg_table *sg_table;
 	struct mutex kmap_lock;
 	struct work_struct free;
 	struct ion_dma_buf_attachment *attachments;
@@ -136,6 +136,7 @@ struct ion_buffer {
 	unsigned int private_flags;
 	size_t size;
 	int kmap_refcount;
+	struct sg_table *sg_table;
 	struct msm_iommu_data iommu_data;
 };
 
