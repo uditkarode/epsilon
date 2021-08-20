@@ -501,12 +501,7 @@ static void update_temperature(struct thermal_zone_device *tz)
 static void thermal_zone_device_init(struct thermal_zone_device *tz)
 {
 	struct thermal_instance *pos;
-
-	if (tz->tzp && tz->tzp->tracks_low)
-		tz->temperature = THERMAL_TEMP_INVALID_LOW;
-	else
-		tz->temperature = THERMAL_TEMP_INVALID;
-
+	tz->temperature = THERMAL_TEMP_INVALID;
 	list_for_each_entry(pos, &tz->thermal_instances, tz_node)
 		pos->initialized = false;
 }
@@ -1684,14 +1679,11 @@ static ssize_t
 thermal_sconfig_store(struct device *dev,
 				      struct device_attribute *attr, const char *buf, size_t len)
 {
-	int rv;
 	int val = -1;
 
-	rv = kstrtoint(buf, 10, &val);
-	atomic_set(&switch_mode, val);
+	val = simple_strtol(buf, NULL, 10);
 
-	if (rv)
-		return rv;
+	atomic_set(&switch_mode, val);
 
 	return len;
 }
@@ -1729,14 +1721,11 @@ static ssize_t
 thermal_temp_state_store(struct device *dev,
 				      struct device_attribute *attr, const char *buf, size_t len)
 {
-	int rv;
 	int val = -1;
 
-	rv = kstrtoint(buf, 10, &val);
-	atomic_set(&temp_state, val);
+	val = simple_strtol(buf, NULL, 10);
 
-	if (rv)
-		return rv;
+	atomic_set(&temp_state, val);
 
 	return len;
 }
